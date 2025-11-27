@@ -6,20 +6,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Job Readiness Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
     <script src="config.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .nav-tabs .nav-link {
+            cursor: pointer;
+        }
+
+        /* Eye Icon Animation */
+        .eye-icon {
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .eye-icon.active {
+            color: #4f46e5;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
-<body class="login-page">
+<body>
 
     <div class="login-card">
-        <div class="login-header">
-            <h3>Job Readiness Portal</h3>
-            <p>Welcome back! Please login to continue.</p>
-        </div>
+        <h3 class="text-center mb-4">Job Readiness Portal</h3>
 
-        <ul class="nav nav-pills nav-fill mb-4" id="loginTabs">
+        <ul class="nav nav-tabs mb-3" id="loginTabs">
             <li class="nav-item">
                 <a class="nav-link active" id="student-tab" onclick="switchTab('student')">Student Login</a>
             </li>
@@ -30,14 +72,13 @@
 
         <form id="loginForm">
             <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
             </div>
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label">Password</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password"
-                        required>
+                    <input type="password" class="form-control" id="password" required>
                     <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-eye eye-icon" viewBox="0 0 16 16">
@@ -49,7 +90,7 @@
                     </button>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
     </div>
 
