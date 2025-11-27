@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from . import models, db
 from .routers import auth, students, job_openings, assessments, student_assessments, job_optins, analytics, admins
+import os
 
 # Create database tables
 models.Base.metadata.create_all(bind=db.engine)
@@ -13,6 +14,8 @@ origins = [
     "http://localhost",
     "http://localhost:8000",
     "http://127.0.0.1:5500", # For local frontend testing
+    "https://storied-wisp-c6f1f7.netlify.app", # Production Frontend URL
+    os.getenv("FRONTEND_URL"), # Additional Production Frontend URL from env
     "*" # Allow all for development simplicity, restrict in production if needed
 ]
 
