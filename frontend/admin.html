@@ -552,7 +552,8 @@
         let currentTable = 'students';
         let currentData = [];
         let currentEditId = null;
-
+        let allStudents = [];
+        let allAssessments = [];
         // Auth Check
         const adminUserStr = localStorage.getItem('adminUser');
         if (!adminUserStr) {
