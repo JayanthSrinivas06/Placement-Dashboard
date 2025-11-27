@@ -1,488 +1,357 @@
 <!DOCTYPE html>
-<html lang="en">
+<a href="#" class="active" onclick="showSection('profile', this)">My Profile</a>
+<a href="#" onclick="showSection('jobs', this)">Job Openings</a>
+<a href="#" onclick="showSection('applications', this)">My Applications</a>
+<a href="#" onclick="showSection('assessments', this)">Assessments</a>
+<a href="#" onclick="openChangePasswordModal()">Change Password</a>
+<a href="#" onclick="logout()" class="mt-auto text-danger">Logout</a>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - Job Readiness Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="config.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            overflow-x: hidden;
-        }
+<!-- Main Content -->
+<div class="main-content">
 
-        .sidebar {
-            height: 100vh;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #1f2937;
-            color: white;
-            padding-top: 20px;
-            transition: all 0.3s;
-        }
-
-        .sidebar a {
-            padding: 15px 25px;
-            text-decoration: none;
-            font-size: 16px;
-            color: #9ca3af;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: white;
-            background-color: #374151;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 24px;
-        }
-
-        .card-header {
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 20px;
-            border-radius: 12px 12px 0 0 !important;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-        }
-
-        .btn-primary:hover {
-            background-color: #4338ca;
-            border-color: #4338ca;
-        }
-
-        .badge-opted-in {
-            background-color: #3b82f6;
-        }
-
-        .badge-interview {
-            background-color: #f59e0b;
-        }
-
-        .badge-offered {
-            background-color: #10b981;
-        }
-
-        .badge-rejected {
-            background-color: #ef4444;
-        }
-
-        .badge-withdrawn {
-            background-color: #6b7280;
-        }
-
-        /* Eye Icon Animation */
-        .eye-icon {
-            transition: color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .eye-icon.active {
-            color: #4f46e5;
-            animation: pulse 0.5s;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Congratulations Section */
-        .congrats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h3 class="text-center mb-4 fw-bold">ProU Student</h3>
-        <a href="#" class="active" onclick="showSection('profile', this)">My Profile</a>
-        <a href="#" onclick="showSection('jobs', this)">Job Openings</a>
-        <a href="#" onclick="showSection('applications', this)">My Applications</a>
-        <a href="#" onclick="showSection('assessments', this)">Assessments</a>
-        <a href="#" onclick="openChangePasswordModal()">Change Password</a>
-        <a href="#" onclick="logout()" class="mt-auto text-danger">Logout</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold" id="pageTitle">My Profile</h2>
+        <span id="welcomeMsg" class="text-muted"></span>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold" id="pageTitle">My Profile</h2>
-            <span id="welcomeMsg" class="text-muted"></span>
-        </div>
-
-        <!-- Placed Congratulations Section -->
-        <div id="placed-section" style="display: none;" class="mb-4">
-            <div class="card congrats-card p-4 text-center">
-                <h2 class="fw-bold mb-3">🎉 Congratulations! 🎉</h2>
-                <p class="lead">You have been placed! We are so proud of your achievement.</p>
-                <div id="placedCompanies" class="mt-3">
-                    <!-- Companies will be listed here -->
-                </div>
+    <!-- Placed Congratulations Section -->
+    <div id="placed-section" style="display: none;" class="mb-4">
+        <div class="card congrats-card p-4 text-center">
+            <h2 class="fw-bold mb-3">🎉 Congratulations! 🎉</h2>
+            <p class="lead">You have been placed! We are so proud of your achievement.</p>
+            <div id="placedCompanies" class="mt-3">
+                <!-- Companies will be listed here -->
             </div>
         </div>
+    </div>
 
-        <!-- Profile Section -->
-        <div id="profile-section">
-            <div class="card p-4">
-                <form id="profileForm">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Name</label>
-                            <input type="text" class="form-control" id="profileName" disabled>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="profileEmail" disabled>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="profilePhone">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Resume URL</label>
-                            <input type="text" class="form-control" id="profileResume">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" id="profileStatus">
-                                <option value="Looking for job">Looking for job</option>
-                                <option value="Placed">Placed</option>
-                            </select>
-                        </div>
-                        <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
+    <!-- Profile Section -->
+    <div id="profile-section">
+        <div class="card p-4">
+            <form id="profileForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="profileName" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="profileEmail" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="profilePhone">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Resume URL</label>
+                        <input type="text" class="form-control" id="profileResume">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="profileStatus">
+                            <option value="Looking for job">Looking for job</option>
+                            <option value="Placed">Placed</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Job Openings Section -->
+    <div id="jobs-section" style="display: none;">
+        <div id="jobsList" class="row g-4">
+            <!-- Jobs will be loaded here -->
+        </div>
+    </div>
+
+    <!-- My Applications Section -->
+    <div id="applications-section" style="display: none;">
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0" id="applicationsTable">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessments Section -->
+    <div id="assessments-section" style="display: none;">
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0" id="assessmentsTable">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <p id="noAssessmentsMsg" class="text-muted mt-3" style="display:none;">No assessments assigned.</p>
+    </div>
+
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="newPassword" required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye eye-icon" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
+                    <button type="submit" class="btn btn-primary w-100">Update Password</button>
                 </form>
             </div>
         </div>
-
-        <!-- Job Openings Section -->
-        <div id="jobs-section" style="display: none;">
-            <div id="jobsList" class="row g-4">
-                <!-- Jobs will be loaded here -->
-            </div>
-        </div>
-
-        <!-- My Applications Section -->
-        <div id="applications-section" style="display: none;">
-            <div class="card">
-                <div class="card-body p-0">
-                    <table class="table table-hover mb-0" id="applicationsTable">
-                        <thead>
-                            <tr>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Assessments Section -->
-        <div id="assessments-section" style="display: none;">
-            <div class="card">
-                <div class="card-body p-0">
-                    <table class="table table-hover mb-0" id="assessmentsTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Status</th>
-                                <th>Score</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <p id="noAssessmentsMsg" class="text-muted mt-3" style="display:none;">No assessments assigned.</p>
-        </div>
-
     </div>
+</div>
 
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="passwordModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Change Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="passwordForm">
-                        <div class="mb-3">
-                            <label class="form-label">New Password</label>
-                            <div class="input-group">
-                                <input type="password" class="form-control" id="newPassword" required>
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-eye eye-icon" viewBox="0 0 16 16">
-                                        <path
-                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
-                                        <path
-                                            d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Update Password</button>
-                    </form>
-                </div>
+<!-- Job Details Modal -->
+<div class="modal fade" id="jobDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobDetailModalLabel">Job Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h3 id="detailJobTitle" class="fw-bold"></h3>
+                <h5 id="detailJobCompany" class="text-muted mb-3"></h5>
+                <div id="detailJobDesc" class="job-description"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Job Details Modal -->
-    <div class="modal fade" id="jobDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="jobDetailModalLabel">Job Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <h3 id="detailJobTitle" class="fw-bold"></h3>
-                    <h5 id="detailJobCompany" class="text-muted mb-3"></h5>
-                    <div id="detailJobDesc" class="job-description"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const API_BASE = window.API_BASE; // From config.js
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const API_BASE = window.API_BASE; // From config.js
+    let currentUser = null;
+    let myApplications = [];
+    let allJobs = [];
+    let passwordModal;
 
-        let currentUser = null;
-        let myApplications = [];
-        let allJobs = [];
-        let passwordModal;
+    // Auth Check
+    if (!localStorage.getItem('studentUser')) {
+        window.location.href = 'index.html';
+    } else {
+        currentUser = JSON.parse(localStorage.getItem('studentUser'));
+        document.getElementById('welcomeMsg').innerText = `Welcome, ${currentUser.name}`;
+        loadProfile();
+    }
 
-        // Auth Check
-        if (!localStorage.getItem('studentUser')) {
-            window.location.href = 'index.html';
-        } else {
-            currentUser = JSON.parse(localStorage.getItem('studentUser'));
-            document.getElementById('welcomeMsg').innerText = `Welcome, ${currentUser.name}`;
-            loadProfile();
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
 
-        document.addEventListener('DOMContentLoaded', () => {
-            passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        const toggleBtn = document.getElementById('togglePassword');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function () {
+                const passwordInput = document.getElementById('newPassword');
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
 
-            const toggleBtn = document.getElementById('togglePassword');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function () {
-                    const passwordInput = document.getElementById('newPassword');
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-
-                    // Animate Eye Icon
-                    const icon = this.querySelector('.eye-icon');
-                    icon.classList.toggle('active');
-                });
-            }
-        });
-
-        function logout() {
-            localStorage.removeItem('studentUser');
-            window.location.href = 'index.html';
-        }
-
-        function openChangePasswordModal() {
-            document.getElementById('passwordForm').reset();
-            document.getElementById('newPassword').setAttribute('type', 'password');
-            const icon = document.querySelector('#togglePassword .eye-icon');
-            if (icon) icon.classList.remove('active');
-            passwordModal.show();
-        }
-
-        function showSection(sectionId, link) {
-            document.querySelectorAll('.main-content > div[id$="-section"]').forEach(div => div.style.display = 'none');
-
-            if (sectionId === 'profile') checkPlacedStatus();
-            else document.getElementById('placed-section').style.display = 'none';
-
-            document.getElementById(sectionId + '-section').style.display = 'block';
-
-            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-            link.classList.add('active');
-
-            const titles = {
-                'profile': 'My Profile',
-                'jobs': 'Job Openings',
-                'applications': 'My Applications',
-                'assessments': 'My Assessments'
-            };
-            document.getElementById('pageTitle').innerText = titles[sectionId];
-
-            if (sectionId === 'jobs') loadJobs();
-            if (sectionId === 'applications') loadApplications();
-            if (sectionId === 'assessments') loadAssessments();
-        }
-
-        // --- Profile ---
-        async function loadProfile() {
-            const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`);
-            const data = await res.json();
-            document.getElementById('profileName').value = data.name;
-            document.getElementById('profileEmail').value = data.email;
-            document.getElementById('profilePhone').value = data.phone || '';
-            document.getElementById('profileResume').value = data.resume_url || '';
-            document.getElementById('profileStatus').value = data.status || 'Looking for job';
-
-            currentUser.status = data.status;
-            checkPlacedStatus();
-        }
-
-        async function checkPlacedStatus() {
-            if (currentUser.status === 'Placed') {
-                await fetchMyApplications();
-                const offeredApps = myApplications.filter(app => app.status === 'OFFERED');
-
-                if (offeredApps.length > 0) {
-                    const resJobs = await fetch(`${API_BASE}/job-openings/`);
-                    const jobs = await resJobs.json();
-                    const jobsMap = {};
-                    jobs.forEach(j => jobsMap[j.id] = j);
-
-                    const companies = offeredApps.map(app => jobsMap[app.job_opening_id]?.company_name).filter(Boolean);
-                    const uniqueCompanies = [...new Set(companies)];
-
-                    if (uniqueCompanies.length > 0) {
-                        const companyBadges = uniqueCompanies.map(c => `<span
-                        class="badge bg-light text-primary fs-6 m-1">${c}</span>`).join('');
-                        document.getElementById('placedCompanies').innerHTML = companyBadges;
-                        document.getElementById('placed-section').style.display = 'block';
-                        return;
-                    }
-                }
-            }
-            document.getElementById('placed-section').style.display = 'none';
-        }
-
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const updateData = {
-                phone: document.getElementById('profilePhone').value,
-                resume_url: document.getElementById('profileResume').value,
-                status: document.getElementById('profileStatus').value
-            };
-
-            const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateData)
+                // Animate Eye Icon
+                const icon = this.querySelector('.eye-icon');
+                icon.classList.toggle('active');
             });
-
-            if (res.ok) {
-                alert('Profile updated successfully');
-                currentUser.status = updateData.status;
-                checkPlacedStatus();
-            } else {
-                alert('Error updating profile');
-            }
-        });
-
-        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const password = document.getElementById('newPassword').value;
-
-            const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
-            });
-
-            if (res.ok) {
-                alert('Password updated successfully');
-                passwordModal.hide();
-            } else {
-                alert('Error updating password');
-            }
-        });
-
-        // --- Jobs ---
-        function stripHtml(html) {
-            let tmp = document.createElement("DIV");
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || "";
         }
+    });
 
-        async function fetchMyApplications() {
-            const res = await fetch(`${API_BASE}/job-optins/student/${currentUser.id}`);
-            if (res.ok) {
-                myApplications = await res.json();
-            }
-        }
+    function logout() {
+        localStorage.removeItem('studentUser');
+        window.location.href = 'index.html';
+    }
 
-        async function loadJobs() {
+    function openChangePasswordModal() {
+        document.getElementById('passwordForm').reset();
+        document.getElementById('newPassword').setAttribute('type', 'password');
+        const icon = document.querySelector('#togglePassword .eye-icon');
+        if (icon) icon.classList.remove('active');
+        passwordModal.show();
+    }
+
+    function showSection(sectionId, link) {
+        document.querySelectorAll('.main-content > div[id$="-section"]').forEach(div => div.style.display = 'none');
+
+        if (sectionId === 'profile') checkPlacedStatus();
+        else document.getElementById('placed-section').style.display = 'none';
+
+        document.getElementById(sectionId + '-section').style.display = 'block';
+
+        document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+
+        const titles = {
+            'profile': 'My Profile',
+            'jobs': 'Job Openings',
+            'applications': 'My Applications',
+            'assessments': 'My Assessments'
+        };
+        document.getElementById('pageTitle').innerText = titles[sectionId];
+
+        if (sectionId === 'jobs') loadJobs();
+        if (sectionId === 'applications') loadApplications();
+        if (sectionId === 'assessments') loadAssessments();
+    }
+
+    // --- Profile ---
+    async function loadProfile() {
+        const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`);
+        const data = await res.json();
+        document.getElementById('profileName').value = data.name;
+        document.getElementById('profileEmail').value = data.email;
+        document.getElementById('profilePhone').value = data.phone || '';
+        document.getElementById('profileResume').value = data.resume_url || '';
+        document.getElementById('profileStatus').value = data.status || 'Looking for job';
+
+        currentUser.status = data.status;
+        checkPlacedStatus();
+    }
+
+    async function checkPlacedStatus() {
+        if (currentUser.status === 'Placed') {
             await fetchMyApplications();
-            const res = await fetch(`${API_BASE}/job-openings/`);
-            allJobs = await res.json();
-            const container = document.getElementById('jobsList');
-            container.innerHTML = '';
+            const offeredApps = myApplications.filter(app => app.status === 'OFFERED');
 
-            allJobs.forEach(job => {
-                const app = myApplications.find(a => a.job_opening_id === job.id);
-                let btnHtml = `<button class="btn btn-primary w-100" onclick="optIn(${job.id})">Apply Now</button>`;
+            if (offeredApps.length > 0) {
+                const resJobs = await fetch(`${API_BASE}/job-openings/`);
+                const jobs = await resJobs.json();
+                const jobsMap = {};
+                jobs.forEach(j => jobsMap[j.id] = j);
 
-                if (app) {
-                    if (app.status === 'WITHDRAWN') {
-                        btnHtml = `<button class="btn btn-secondary w-100" disabled>Withdrawn</button>`;
-                    } else {
-                        btnHtml = `<button class="btn btn-success w-100" disabled>Applied</button>`;
-                    }
+                const companies = offeredApps.map(app => jobsMap[app.job_opening_id]?.company_name).filter(Boolean);
+                const uniqueCompanies = [...new Set(companies)];
+
+                if (uniqueCompanies.length > 0) {
+                    const companyBadges = uniqueCompanies.map(c => `<span
+                        class="badge bg-light text-primary fs-6 m-1">${c}</span>`).join('');
+                    document.getElementById('placedCompanies').innerHTML = companyBadges;
+                    document.getElementById('placed-section').style.display = 'block';
+                    return;
                 }
+            }
+        }
+        document.getElementById('placed-section').style.display = 'none';
+    }
 
-                const plainDesc = stripHtml(job.description);
-                const shortDesc = plainDesc.length > 100 ? plainDesc.substring(0, 100) + '...' : plainDesc;
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const updateData = {
+            phone: document.getElementById('profilePhone').value,
+            resume_url: document.getElementById('profileResume').value,
+            status: document.getElementById('profileStatus').value
+        };
 
-                const card = `
+        const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+        });
+
+        if (res.ok) {
+            alert('Profile updated successfully');
+            currentUser.status = updateData.status;
+            checkPlacedStatus();
+        } else {
+            alert('Error updating profile');
+        }
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('newPassword').value;
+
+        const res = await fetch(`${API_BASE}/students/${currentUser.id}/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+
+        if (res.ok) {
+            alert('Password updated successfully');
+            passwordModal.hide();
+        } else {
+            alert('Error updating password');
+        }
+    });
+
+    // --- Jobs ---
+    function stripHtml(html) {
+        let tmp = document.createElement("DIV");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+    }
+
+    async function fetchMyApplications() {
+        const res = await fetch(`${API_BASE}/job-optins/student/${currentUser.id}`);
+        if (res.ok) {
+            myApplications = await res.json();
+        }
+    }
+
+    async function loadJobs() {
+        await fetchMyApplications();
+        const res = await fetch(`${API_BASE}/job-openings/`);
+        allJobs = await res.json();
+        const container = document.getElementById('jobsList');
+        container.innerHTML = '';
+
+        allJobs.forEach(job => {
+            const app = myApplications.find(a => a.job_opening_id === job.id);
+            let btnHtml = `<button class="btn btn-primary w-100" onclick="optIn(${job.id})">Apply Now</button>`;
+
+            if (app) {
+                if (app.status === 'WITHDRAWN') {
+                    btnHtml = `<button class="btn btn-secondary w-100" disabled>Withdrawn</button>`;
+                } else {
+                    btnHtml = `<button class="btn btn-success w-100" disabled>Applied</button>`;
+                }
+            }
+
+            const plainDesc = stripHtml(job.description);
+            const shortDesc = plainDesc.length > 100 ? plainDesc.substring(0, 100) + '...' : plainDesc;
+
+            const card = `
                     <div class="col-md-6 col-lg-4">
                         <div class="card h-100 p-3">
                             <div class="card-body d-flex flex-column">
@@ -500,142 +369,142 @@
                         </div>
                     </div>
                     `;
-                container.innerHTML += card;
-            });
+            container.innerHTML += card;
+        });
+    }
+
+    async function viewJobDetails(jobId) {
+        const job = allJobs.find(j => j.id === jobId);
+        if (job) {
+            document.getElementById('detailJobTitle').innerText = job.title;
+            document.getElementById('detailJobCompany').innerText = job.company_name;
+            document.getElementById('detailJobDesc').innerHTML = job.description;
+            new bootstrap.Modal(document.getElementById('jobDetailModal')).show();
         }
+    }
 
-        async function viewJobDetails(jobId) {
-            const job = allJobs.find(j => j.id === jobId);
-            if (job) {
-                document.getElementById('detailJobTitle').innerText = job.title;
-                document.getElementById('detailJobCompany').innerText = job.company_name;
-                document.getElementById('detailJobDesc').innerHTML = job.description;
-                new bootstrap.Modal(document.getElementById('jobDetailModal')).show();
-            }
+    async function optIn(jobId) {
+        const res = await fetch(`${API_BASE}/job-optins/opt-in`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ student_id: currentUser.id, job_opening_id: jobId })
+        });
+
+        if (res.ok) {
+            alert('Opted in successfully!');
+            loadJobs();
+        } else {
+            const data = await res.json();
+            alert(data.detail || 'Error opting in');
         }
+    }
 
-        async function optIn(jobId) {
-            const res = await fetch(`${API_BASE}/job-optins/opt-in`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ student_id: currentUser.id, job_opening_id: jobId })
-            });
+    // --- Applications ---
+    async function loadApplications() {
+        await fetchMyApplications();
+        const resJobs = await fetch(`${API_BASE}/job-openings/`);
+        const jobs = await resJobs.json();
+        const jobsMap = {};
+        jobs.forEach(j => jobsMap[j.id] = j);
 
-            if (res.ok) {
-                alert('Opted in successfully!');
-                loadJobs();
-            } else {
-                const data = await res.json();
-                alert(data.detail || 'Error opting in');
-            }
-        }
+        const tbody = document.querySelector('#applicationsTable tbody');
+        tbody.innerHTML = '';
 
-        // --- Applications ---
-        async function loadApplications() {
-            await fetchMyApplications();
-            const resJobs = await fetch(`${API_BASE}/job-openings/`);
-            const jobs = await resJobs.json();
-            const jobsMap = {};
-            jobs.forEach(j => jobsMap[j.id] = j);
+        myApplications.forEach(app => {
+            const job = jobsMap[app.job_opening_id];
+            const jobTitle = job ? job.title : 'Unknown Job';
+            const company = job ? job.company_name : 'Unknown Company';
 
-            const tbody = document.querySelector('#applicationsTable tbody');
-            tbody.innerHTML = '';
+            let badgeClass = 'bg-secondary';
+            if (app.status === 'OPTED_IN') badgeClass = 'bg-primary';
+            if (app.status === 'INTERVIEW_SCHEDULED') badgeClass = 'bg-warning text-dark';
+            if (app.status === 'OFFERED') badgeClass = 'bg-success';
+            if (app.status === 'REJECTED') badgeClass = 'bg-danger';
+            if (app.status === 'WITHDRAWN') badgeClass = 'bg-secondary';
 
-            myApplications.forEach(app => {
-                const job = jobsMap[app.job_opening_id];
-                const jobTitle = job ? job.title : 'Unknown Job';
-                const company = job ? job.company_name : 'Unknown Company';
-
-                let badgeClass = 'bg-secondary';
-                if (app.status === 'OPTED_IN') badgeClass = 'bg-primary';
-                if (app.status === 'INTERVIEW_SCHEDULED') badgeClass = 'bg-warning text-dark';
-                if (app.status === 'OFFERED') badgeClass = 'bg-success';
-                if (app.status === 'REJECTED') badgeClass = 'bg-danger';
-                if (app.status === 'WITHDRAWN') badgeClass = 'bg-secondary';
-
-                let actionBtn = '';
-                if (app.status !== 'WITHDRAWN' && app.status !== 'REJECTED') {
-                    actionBtn = `<button class="btn btn-sm btn-outline-danger"
+            let actionBtn = '';
+            if (app.status !== 'WITHDRAWN' && app.status !== 'REJECTED') {
+                actionBtn = `<button class="btn btn-sm btn-outline-danger"
                         onclick="withdraw(${app.job_opening_id})">Withdraw</button>`;
-                }
+            }
 
-                tbody.innerHTML += `
+            tbody.innerHTML += `
                     <tr>
                         <td>${jobTitle}</td>
                         <td>${company}</td>
                         <td><span class="badge ${badgeClass}">${app.status}</span></td>
                         <td>${actionBtn}</td>
                     </tr>`;
-            });
+        });
+    }
+
+    async function withdraw(jobId) {
+        if (!confirm('Are you sure? You cannot apply again if you withdraw.')) return;
+
+        const res = await fetch(`${API_BASE}/job-optins/withdraw`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ student_id: currentUser.id, job_opening_id: jobId })
+        });
+
+        if (res.ok) {
+            alert('Withdrawn successfully!');
+            loadApplications();
+        } else {
+            const data = await res.json();
+            alert(data.detail || 'Error withdrawing');
         }
+    }
 
-        async function withdraw(jobId) {
-            if (!confirm('Are you sure? You cannot apply again if you withdraw.')) return;
+    // --- Assessments ---
+    async function loadAssessments() {
+        const res = await fetch(`${API_BASE}/student-assessments/students/${currentUser.id}`);
+        const assessments = await res.json();
+        const tbody = document.querySelector('#assessmentsTable tbody');
+        const noMsg = document.getElementById('noAssessmentsMsg');
 
-            const res = await fetch(`${API_BASE}/job-optins/withdraw`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ student_id: currentUser.id, job_opening_id: jobId })
-            });
-
-            if (res.ok) {
-                alert('Withdrawn successfully!');
-                loadApplications();
-            } else {
-                const data = await res.json();
-                alert(data.detail || 'Error withdrawing');
-            }
-        }
-
-        // --- Assessments ---
-        async function loadAssessments() {
-            const res = await fetch(`${API_BASE}/student-assessments/students/${currentUser.id}`);
-            const assessments = await res.json();
-            const tbody = document.querySelector('#assessmentsTable tbody');
-            const noMsg = document.getElementById('noAssessmentsMsg');
-
-            tbody.innerHTML = '';
-            if (assessments.length === 0) {
-                noMsg.style.display = 'block';
-            } else {
-                noMsg.style.display = 'none';
-                assessments.forEach(a => {
-                    let actionBtn = '';
-                    if (a.status !== 'COMPLETED') {
-                        actionBtn = `<button class="btn btn-sm btn-success" onclick="completeAssessment(${a.id})">Mark as
+        tbody.innerHTML = '';
+        if (assessments.length === 0) {
+            noMsg.style.display = 'block';
+        } else {
+            noMsg.style.display = 'none';
+            assessments.forEach(a => {
+                let actionBtn = '';
+                if (a.status !== 'COMPLETED') {
+                    actionBtn = `<button class="btn btn-sm btn-success" onclick="completeAssessment(${a.id})">Mark as
                         Completed</button>`;
-                    } else {
-                        actionBtn = `<span class="text-success fw-bold">Done</span>`;
-                    }
+                } else {
+                    actionBtn = `<span class="text-success fw-bold">Done</span>`;
+                }
 
-                    tbody.innerHTML += `
+                tbody.innerHTML += `
                     <tr>
                         <td>${a.assessment ? a.assessment.title : 'Unknown'}</td>
                         <td>${a.status}</td>
                         <td>${a.score || '-'}</td>
                         <td>${actionBtn}</td>
                     </tr>`;
-                });
-            }
-        }
-
-        async function completeAssessment(assessmentId) {
-            if (!confirm('Mark this assessment as completed?')) return;
-
-            const res = await fetch(`${API_BASE}/student-assessments/${assessmentId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'COMPLETED' })
             });
-
-            if (res.ok) {
-                alert('Assessment marked as completed!');
-                loadAssessments();
-            } else {
-                alert('Error updating assessment');
-            }
         }
-    </script>
+    }
+
+    async function completeAssessment(assessmentId) {
+        if (!confirm('Mark this assessment as completed?')) return;
+
+        const res = await fetch(`${API_BASE}/student-assessments/${assessmentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'COMPLETED' })
+        });
+
+        if (res.ok) {
+            alert('Assessment marked as completed!');
+            loadAssessments();
+        } else {
+            alert('Error updating assessment');
+        }
+    }
+</script>
 </body>
 
 </html>
