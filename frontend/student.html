@@ -539,7 +539,7 @@
 
         // --- Assessments ---
         async function loadAssessments() {
-            const res = await fetch(`${API_BASE}/student-assessments/student/${currentUser.id}`);
+            const res = await fetch(`${API_BASE}/student-assessments/students/${currentUser.id}`);
             const assessments = await res.json();
             const tbody = document.querySelector('#assessmentsTable tbody');
             tbody.innerHTML = '';
