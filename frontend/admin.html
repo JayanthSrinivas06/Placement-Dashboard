@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Job Readiness Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #1f2937;
+            color: white;
+            padding-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #9ca3af;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: white;
+            background-color: #374151;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .stat-card {
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .eye-icon {
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .eye-icon.active {
+            color: #4f46e5;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3 class="text-center mb-4 fw-bold">ProU Admin</h3>
+        <a href="#" class="active" onclick="showSection('dashboard', this)">Dashboard</a>
+        <a href="#" onclick="showSection('students', this)">Students</a>
+        <a href="#" onclick="showSection('jobs', this)">Job Openings</a>
+        <a href="#" onclick="showSection('assessments', this)">Assessments</a>
+        <a href="#" onclick="showSection('admins', this)">Admins</a>
+        <a href="#" onclick="showSection('database', this)">Database</a>
+        <a href="#" onclick="openChangePasswordModal()" class="mt-auto">Change Password</a>
+        <a href="#" onclick="logout()" class="text-danger">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <h2 class="mb-4 fw-bold">Dashboard Overview</h2>
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card p-4">
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value" id="stat-total-students">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4">
+                        <div class="stat-label">Placed Students</div>
+                        <div class="stat-value text-success" id="stat-placed-students">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4">
+                        <div class="stat-label">Active Jobs</div>
+                        <div class="stat-value text-primary" id="stat-total-jobs">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card p-4">
+                        <div class="stat-label">Total Applications</div>
+                        <div class="stat-value text-warning" id="stat-total-applications">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card p-4">
+                        <h5 class="card-title mb-4">Application Funnel</h5><canvas id="applicationChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <h5 class="card-title mb-4">Placement Rate</h5><canvas id="placementChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Section -->
+        <div id="students-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Manage Students</h2>
+                <button class="btn btn-primary" onclick="openAddStudentModal()">+ Add Student</button>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Section -->
+        <div id="jobs-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Manage Job Openings</h2>
+                <button class="btn btn-primary" onclick="openAddJobModal()">+ Add Job</button>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0" id="jobsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Company</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessments Section -->
+        <div id="assessments-section" style="display: none;">
+            <h2 class="fw-bold mb-4">Manage Assessments</h2>
+            <ul class="nav nav-tabs mb-4" id="assessmentTabs" role="tablist">
+                <li class="nav-item" role="presentation"><button class="nav-link active" id="definitions-tab"
+                        data-bs-toggle="tab" data-bs-target="#definitions" type="button" role="tab">Assessment
+                        Definitions</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link" id="assignments-tab"
+                        data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab">Student
+                        Assignments</button></li>
+            </ul>
+            <div class="tab-content" id="assessmentTabsContent">
+                <div class="tab-pane fade show active" id="definitions" role="tabpanel">
+                    <div class="d-flex justify-content-end mb-3"><button class="btn btn-primary"
+                            onclick="openAddAssessmentModal()">+ Add Assessment</button></div>
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0" id="assessmentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Max Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="assignments" role="tabpanel">
+                    <div class="card p-4 mb-4 bg-light border-0">
+                        <h5 class="mb-3 fw-bold">Assign New Assessment</h5>
+                        <form id="assignAssessmentForm" class="row g-3">
+                            <div class="col-md-5"><select id="assignStudentSelect" placeholder="Search Student..."
+                                    required></select></div>
+                            <div class="col-md-5"><select id="assignAssessmentSelect" placeholder="Search Assessment..."
+                                    required></select></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Assign</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-white fw-bold">Current Assignments</div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0" id="studentAssessmentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Student</th>
+                                        <th>Assessment</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admins Section -->
+        <div id="admins-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Manage Admins</h2><button class="btn btn-primary" onclick="openAddAdminModal()">+
+                    Add Admin</button>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0" id="adminsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Section -->
+        <div id="database-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Database Management</h2>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="dbTableSelect" onchange="loadDatabase(this.value)">
+                        <option value="students">Students</option>
+                        <option value="job_openings">Job Openings</option>
+                        <option value="assessments">Assessments</option>
+                        <option value="admin_users">Admins</option>
+                        <option value="student_assessments">Student Assessments</option>
+                        <option value="job_optins">Job Applications</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="openDatabaseModal('add')">+ Add New</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="databaseTable">
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit Student Modal -->
+    <div class="modal fade" id="studentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalTitle">Add Student</h5><button type="button"
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="studentForm">
+                        <input type="hidden" id="studentId">
+                        <div class="mb-3"><label>Name</label><input type="text" class="form-control" id="studentName"
+                                required></div>
+                        <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="studentEmail"
+                                required></div>
+                        <div class="mb-3"><label>Password</label>
+                            <div class="input-group"><input type="password" class="form-control"
+                                    id="studentPassword"><button class="btn btn-outline-secondary" type="button"
+                                    id="toggleStudentPassword"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                        height="16" fill="currentColor" class="bi bi-eye eye-icon" viewBox="0 0 16 16">
+                                        <path
+                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                        <path
+                                            d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                    </svg></button></div>
+                        </div>
+                        <div class="mb-3"><label>Status</label><select class="form-select" id="studentStatus">
+                                <option value="Looking for job">Looking for job</option>
+                                <option value="Placed">Placed</option>
+                            </select></div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Job Modal -->
+    <div class="modal fade" id="jobModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="jobModalTitle">Add Job</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="jobForm">
+                        <input type="hidden" id="jobId">
+                        <div class="mb-3"><label>Title</label><input type="text" class="form-control" id="jobTitle"
+                                required></div>
+                        <div class="mb-3"><label>Company</label><input type="text" class="form-control" id="jobCompany"
+                                required></div>
+                        <div class="mb-3"><label>Location</label><input type="text" class="form-control"
+                                id="jobLocation" required></div>
+                        <div class="mb-3"><label>Type</label><select class="form-select" id="jobType">
+                                <option value="Full-time">Full-time</option>
+                                <option value="Internship">Internship</option>
+                            </select></div>
+                        <div class="mb-3"><label>Description</label><textarea class="form-control" id="jobDescription"
+                                required></textarea></div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Applications Modal -->
+    <div class="modal fade" id="applicationsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Job Applications</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-sm" id="applicationsTable">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Assessment Modal -->
+    <div class="modal fade" id="assessmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Assessment</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="assessmentForm">
+                        <div class="mb-3"><label>Title</label><input type="text" class="form-control"
+                                id="assessmentTitle" required></div>
+                        <div class="mb-3"><label>Description</label><textarea class="form-control" id="assessmentDesc"
+                                required></textarea></div>
+                        <div class="mb-3"><label>Max Score</label><input type="number" class="form-control"
+                                id="assessmentScore" required></div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Admin</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminForm">
+                        <div class="mb-3"><label>Name</label><input type="text" class="form-control" id="adminName"
+                                required></div>
+                        <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="adminEmail"
+                                required></div>
+                        <div class="mb-3"><label>Password</label><input type="password" class="form-control"
+                                id="adminPassword" required></div>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label>New Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-eye eye-icon" viewBox="0 0 16 16">
+                                        <path
+                                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                        <path
+                                            d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Modal -->
+    <div class="modal fade" id="databaseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="databaseModalTitle">Edit Record</h5><button type="button"
+                        class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="databaseForm"></form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveDatabaseItem()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let studentModal, jobModal, applicationsModal, assessmentModal, adminModal, changePasswordModal, databaseModal;
+        let appChart, placeChart;
+        let allStudents = [];
+        let allAssessments = [];
+        let studentTomSelect, assessmentTomSelect;
+        let currentUser = null;
+        let currentTable = 'students';
+        let currentData = [];
+        let currentEditId = null;
+
+        // Auth Check
+        const adminUserStr = localStorage.getItem('adminUser');
+        if (!adminUserStr) {
+            window.location.href = 'index.html';
+        } else {
+            currentUser = JSON.parse(adminUserStr);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            studentModal = new bootstrap.Modal(document.getElementById('studentModal'));
+            jobModal = new bootstrap.Modal(document.getElementById('jobModal'));
+            applicationsModal = new bootstrap.Modal(document.getElementById('applicationsModal'));
+            assessmentModal = new bootstrap.Modal(document.getElementById('assessmentModal'));
+            adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
+            changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+            databaseModal = new bootstrap.Modal(document.getElementById('databaseModal'));
+
+            // Toggle Password Visibility
+            document.getElementById('toggleNewPassword').addEventListener('click', function () {
+                const passwordInput = document.getElementById('newPassword');
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.querySelector('.eye-icon').classList.toggle('active');
+            });
+
+            // Initialize Tom Select
+            studentTomSelect = new TomSelect("#assignStudentSelect", { create: false, sortField: { field: "text", direction: "asc" } });
+            assessmentTomSelect = new TomSelect("#assignAssessmentSelect", { create: false, sortField: { field: "text", direction: "asc" } });
+
+            loadDashboard();
+        });
+
+        function updateStudentDatalist() {
+            if (studentTomSelect) {
+                studentTomSelect.clearOptions();
+                allStudents.forEach(s => { studentTomSelect.addOption({ value: s.id, text: `${s.name} (ID: ${s.id})` }); });
+                studentTomSelect.sync();
+            }
+        }
+
+        function updateAssessmentDatalist() {
+            if (assessmentTomSelect) {
+                assessmentTomSelect.clearOptions();
+                allAssessments.forEach(a => { assessmentTomSelect.addOption({ value: a.id, text: `${a.title} (ID: ${a.id})` }); });
+                assessmentTomSelect.sync();
+            }
+        }
+
+        function logout() { localStorage.removeItem('adminUser'); window.location.href = 'index.html'; }
+
+        function showSection(sectionId, link) {
+            document.querySelectorAll('.main-content > div').forEach(div => div.style.display = 'none');
+            document.getElementById(sectionId + '-section').style.display = 'block';
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+            link.classList.add('active');
+            if (sectionId === 'dashboard') loadDashboard();
+            if (sectionId === 'students') loadStudents();
+            if (sectionId === 'jobs') loadJobs();
+            if (sectionId === 'assessments') loadAssessments();
+            if (sectionId === 'admins') loadAdmins();
+            if (sectionId === 'database') loadDatabase(document.getElementById('dbTableSelect').value);
+        }
+
+        // --- Dashboard ---
+        async function loadDashboard() {
+            const res = await fetch(`${API_BASE}/analytics/dashboard`);
+            const data = await res.json();
+            document.getElementById('stat-total-students').innerText = data.total_students;
+            document.getElementById('stat-placed-students').innerText = data.placed_students;
+            document.getElementById('stat-total-jobs').innerText = data.total_jobs;
+            document.getElementById('stat-total-applications').innerText = data.total_applications;
+            renderCharts(data);
+        }
+
+        function renderCharts(data) {
+            const ctxApp = document.getElementById('applicationChart').getContext('2d');
+            const ctxPlace = document.getElementById('placementChart').getContext('2d');
+            if (appChart) appChart.destroy();
+            if (placeChart) placeChart.destroy();
+            appChart = new Chart(ctxApp, { type: 'bar', data: { labels: Object.keys(data.application_status_breakdown), datasets: [{ label: 'Applications', data: Object.values(data.application_status_breakdown), backgroundColor: '#4f46e5' }] }, options: { responsive: true } });
+            placeChart = new Chart(ctxPlace, { type: 'doughnut', data: { labels: ['Placed', 'Looking'], datasets: [{ data: [data.placed_students, data.total_students - data.placed_students], backgroundColor: ['#10b981', '#e5e7eb'] }] }, options: { responsive: true } });
+        }
+
+        // --- Students ---
+        async function loadStudents() {
+            const res = await fetch(`${API_BASE}/students/`);
+            const students = await res.json();
+            allStudents = students; // Update global list for Tom Select
+            updateStudentDatalist();
+            const tbody = document.querySelector('#studentsTable tbody');
+            tbody.innerHTML = '';
+            students.forEach(s => {
+                tbody.innerHTML += `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.email}</td><td><span class="badge bg-${s.status === 'Placed' ? 'success' : 'secondary'}">${s.status}</span></td><td><button class="btn btn-sm btn-outline-primary" onclick="editStudent(${s.id})">Edit</button></td></tr>`;
+            });
+        }
+
+        function openAddStudentModal() {
+            document.getElementById('studentForm').reset();
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentModalTitle').innerText = 'Add Student';
+            studentModal.show();
+        }
+
+        async function editStudent(id) {
+            const res = await fetch(`${API_BASE}/students/${id}`);
+            const s = await res.json();
+            document.getElementById('studentId').value = s.id;
+            document.getElementById('studentName').value = s.name;
+            document.getElementById('studentEmail').value = s.email;
+            document.getElementById('studentStatus').value = s.status || 'Looking for job';
+            document.getElementById('studentModalTitle').innerText = 'Edit Student';
+            studentModal.show();
+        }
+
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('studentId').value;
+            const data = { name: document.getElementById('studentName').value, email: document.getElementById('studentEmail').value, status: document.getElementById('studentStatus').value };
+            const password = document.getElementById('studentPassword').value;
+            if (password) data.password = password;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_BASE}/students/${id}` : `${API_BASE}/students/`;
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { studentModal.hide(); loadStudents(); } else { alert('Error saving student'); }
+        });
+
+        // --- Jobs ---
+        async function loadJobs() {
+            const res = await fetch(`${API_BASE}/job-openings/`);
+            const jobs = await res.json();
+            const tbody = document.querySelector('#jobsTable tbody');
+            tbody.innerHTML = '';
+            jobs.forEach(j => {
+                tbody.innerHTML += `<tr><td>${j.id}</td><td>${j.title}</td><td>${j.company_name}</td><td>${j.location}</td><td><button class="btn btn-sm btn-outline-info" onclick="viewApplications(${j.id})">Apps</button> <button class="btn btn-sm btn-outline-danger" onclick="deleteJob(${j.id})">Delete</button></td></tr>`;
+            });
+        }
+
+        function openAddJobModal() {
+            document.getElementById('jobForm').reset();
+            document.getElementById('jobId').value = '';
+            document.getElementById('jobModalTitle').innerText = 'Add Job';
+            jobModal.show();
+        }
+
+        document.getElementById('jobForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { title: document.getElementById('jobTitle').value, company_name: document.getElementById('jobCompany').value, location: document.getElementById('jobLocation').value, job_type: document.getElementById('jobType').value, description: document.getElementById('jobDescription').value };
+            const res = await fetch(`${API_BASE}/job-openings/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { jobModal.hide(); loadJobs(); } else { alert('Error saving job'); }
+        });
+
+        async function deleteJob(id) {
+            if (!confirm('Are you sure?')) return;
+            await fetch(`${API_BASE}/job-openings/${id}`, { method: 'DELETE' });
+            loadJobs();
+        }
+
+        async function viewApplications(jobId) {
+            const res = await fetch(`${API_BASE}/job-optins/job/${jobId}`);
+            const apps = await res.json();
+            const tbody = document.querySelector('#applicationsTable tbody');
+            tbody.innerHTML = '';
+            apps.forEach(app => {
+                const student = allStudents.find(s => s.id === app.student_id);
+                const studentName = student ? `${student.name} (ID: ${student.id})` : `ID: ${app.student_id}`;
+                tbody.innerHTML += `<tr><td>${studentName}</td><td><span class="badge bg-${app.status === 'WITHDRAWN' ? 'secondary' : 'info'}">${app.status}</span></td><td>${app.status === 'WITHDRAWN' ? '<span class="text-muted fst-italic">Withdrawn</span>' : `<select class="form-select form-select-sm" onchange="updateAppStatus(${app.id}, this.value)"><option value="">Change Status...</option><option value="INTERVIEW_SCHEDULED">Interview</option><option value="OFFERED">Offered</option><option value="REJECTED">Rejected</option><option value="WITHDRAWN">Withdrawn</option></select>`}</td></tr>`;
+            });
+            applicationsModal.show();
+        }
+
+        async function updateAppStatus(optinId, status) {
+            if (!status) return;
+            await fetch(`${API_BASE}/job-optins/${optinId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
+            alert('Status updated');
+        }
+
+        // --- Assessments ---
+        async function loadAssessments() {
+            const res = await fetch(`${API_BASE}/assessments/`);
+            const assessments = await res.json();
+            allAssessments = assessments; // Update global list
+            updateAssessmentDatalist();
+            const tbody = document.querySelector('#assessmentsTable tbody');
+            tbody.innerHTML = '';
+            assessments.forEach(a => {
+                tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.title}</td><td>${a.max_score}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteAssessment(${a.id})">Delete</button></td></tr>`;
+            });
+
+            const resAssign = await fetch(`${API_BASE}/student-assessments/`);
+            const assignments = await resAssign.json();
+            const tbodyAssign = document.querySelector('#studentAssessmentsTable tbody');
+            tbodyAssign.innerHTML = '';
+            assignments.forEach(a => {
+                const student = allStudents.find(s => s.id === a.student_id);
+                const assessment = allAssessments.find(as => as.id === a.assessment_id);
+                const studentName = student ? `${student.name} (ID: ${student.id})` : `ID: ${a.student_id}`;
+                const assessmentTitle = assessment ? `${assessment.title} (ID: ${assessment.id})` : `ID: ${a.assessment_id}`;
+                tbodyAssign.innerHTML += `<tr><td>${a.id}</td><td>${studentName}</td><td>${assessmentTitle}</td><td>${a.status}</td><td>${a.score || '-'}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteAssignment(${a.id})">Delete</button></td></tr>`;
+            });
+        }
+
+        function openAddAssessmentModal() { document.getElementById('assessmentForm').reset(); assessmentModal.show(); }
+
+        document.getElementById('assessmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { title: document.getElementById('assessmentTitle').value, description: document.getElementById('assessmentDesc').value, max_score: document.getElementById('assessmentScore').value };
+            const res = await fetch(`${API_BASE}/assessments/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { assessmentModal.hide(); loadAssessments(); } else { alert('Error creating assessment'); }
+        });
+
+        async function deleteAssessment(id) { if (!confirm('Delete this assessment definition?')) return; await fetch(`${API_BASE}/assessments/${id}`, { method: 'DELETE' }); loadAssessments(); }
+        async function deleteAssignment(id) { if (!confirm('Delete this assignment?')) return; await fetch(`${API_BASE}/student-assessments/${id}`, { method: 'DELETE' }); loadAssessments(); }
+
+        document.getElementById('assignAssessmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const student_id = document.getElementById('assignStudentSelect').value;
+            const assessment_id = document.getElementById('assignAssessmentSelect').value;
+            if (!student_id || !assessment_id) { alert('Please select a valid student and assessment.'); return; }
+            const res = await fetch(`${API_BASE}/student-assessments/assign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ student_id, assessment_id }) });
+            if (res.ok) { alert('Assessment assigned'); e.target.reset(); loadAssessments(); } else { const data = await res.json(); alert(data.detail || 'Error assigning assessment'); }
+        });
+
+        // --- Admins ---
+        async function loadAdmins() {
+            const res = await fetch(`${API_BASE}/admins/`);
+            const admins = await res.json();
+            const tbody = document.querySelector('#adminsTable tbody');
+            tbody.innerHTML = '';
+            admins.forEach(a => { tbody.innerHTML += `<tr><td>${a.id}</td><td>${a.name}</td><td>${a.email}</td></tr>`; });
+        }
+
+        function openAddAdminModal() { document.getElementById('adminForm').reset(); adminModal.show(); }
+
+        document.getElementById('adminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = { name: document.getElementById('adminName').value, email: document.getElementById('adminEmail').value, password: document.getElementById('adminPassword').value };
+            const res = await fetch(`${API_BASE}/admins/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { adminModal.hide(); loadAdmins(); } else { alert('Error creating admin'); }
+        });
+
+        function openChangePasswordModal() { document.getElementById('changePasswordForm').reset(); changePasswordModal.show(); }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const res = await fetch(`${API_BASE}/admins/${currentUser.id}/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: newPassword }) });
+            if (res.ok) { alert('Password updated successfully'); changePasswordModal.hide(); } else { alert('Error updating password'); }
+        });
+
+        // --- Database Management ---
+        const schemas = {
+            students: { endpoint: 'students', columns: ['id', 'name', 'email', 'status'], fields: [{ name: 'name', label: 'Name', type: 'text', required: true }, { name: 'email', label: 'Email', type: 'email', required: true }, { name: 'password', label: 'Password', type: 'password', required: false }, { name: 'status', label: 'Status', type: 'select', options: ['Looking for job', 'Placed'] }] },
+            job_openings: { endpoint: 'job-openings', columns: ['id', 'title', 'company_name', 'location'], fields: [{ name: 'title', label: 'Title', type: 'text', required: true }, { name: 'company_name', label: 'Company', type: 'text', required: true }, { name: 'location', label: 'Location', type: 'text', required: true }, { name: 'job_type', label: 'Type', type: 'select', options: ['Full-time', 'Internship'] }, { name: 'description', label: 'Description', type: 'textarea', required: true }] },
+            assessments: { endpoint: 'assessments', columns: ['id', 'title', 'max_score'], fields: [{ name: 'title', label: 'Title', type: 'text', required: true }, { name: 'description', label: 'Description', type: 'textarea', required: true }, { name: 'max_score', label: 'Max Score', type: 'number', required: true }] },
+            admin_users: { endpoint: 'admins', columns: ['id', 'name', 'email'], fields: [{ name: 'name', label: 'Name', type: 'text', required: true }, { name: 'email', label: 'Email', type: 'email', required: true }, { name: 'password', label: 'Password', type: 'password', required: false }] },
+            student_assessments: { endpoint: 'student-assessments', columns: ['id', 'student_id', 'assessment_id', 'status', 'score'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, { name: 'assessment_id', label: 'Assessment ID', type: 'number', required: true }, { name: 'status', label: 'Status', type: 'select', options: ['ASSIGNED', 'COMPLETED'] }, { name: 'score', label: 'Score', type: 'number' }] },
+            job_optins: { endpoint: 'job-optins', columns: ['id', 'student_id', 'job_opening_id', 'status'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, { name: 'job_opening_id', label: 'Job ID', type: 'number', required: true }, { name: 'status', label: 'Status', type: 'select', options: ['OPTED_IN', 'WITHDRAWN', 'INTERVIEW_SCHEDULED', 'OFFERED', 'REJECTED'] }] }
+        };
+
+        async function loadDatabase(tableName) {
+            currentTable = tableName;
+            const schema = schemas[tableName];
+            const res = await fetch(`${API_BASE}/${schema.endpoint}/`);
+            currentData = await res.json();
+            const thead = document.querySelector('#databaseTable thead');
+            const tbody = document.querySelector('#databaseTable tbody');
+            thead.innerHTML = '<tr>' + schema.columns.map(c => `<th>${c.toUpperCase()}</th>`).join('') + '<th>ACTIONS</th></tr>';
+            tbody.innerHTML = '';
+            currentData.forEach(item => {
+                const row = schema.columns.map(c => `<td>${item[c]}</td>`).join('');
+                tbody.innerHTML += `<tr>${row}<td><button class="btn btn-sm btn-outline-primary" onclick="openDatabaseModal('edit', ${item.id})">Edit</button> <button class="btn btn-sm btn-outline-danger" onclick="deleteDatabaseItem(${item.id})">Delete</button></td></tr>`;
+            });
+        }
+
+        function openDatabaseModal(mode, id = null) {
+            currentEditId = id;
+            const schema = schemas[currentTable];
+            const form = document.getElementById('databaseForm');
+            document.getElementById('databaseModalTitle').innerText = mode === 'add' ? 'Add Record' : 'Edit Record';
+            let item = {};
+            if (mode === 'edit') item = currentData.find(i => i.id === id);
+            form.innerHTML = schema.fields.map(f => {
+                const value = mode === 'edit' ? (item[f.name] || '') : '';
+                if (mode === 'edit' && f.name === 'password') return '';
+                if (f.type === 'select') {
+                    return `<div class="mb-3"><label>${f.label}</label><select class="form-select" id="db_${f.name}">${f.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`;
+                } else if (f.type === 'textarea') {
+                    return `<div class="mb-3"><label>${f.label}</label><textarea class="form-control" id="db_${f.name}" ${f.required ? 'required' : ''}>${value}</textarea></div>`;
+                } else {
+                    return `<div class="mb-3"><label>${f.label}</label><input type="${f.type}" class="form-control" id="db_${f.name}" value="${value}" ${f.required ? 'required' : ''}></div>`;
+                }
+            }).join('');
+            databaseModal.show();
+        }
+
+        async function saveDatabaseItem() {
+            const schema = schemas[currentTable];
+            const data = {};
+            schema.fields.forEach(f => { const el = document.getElementById(`db_${f.name}`); if (el) data[f.name] = el.value; });
+            let url = `${API_BASE}/${schema.endpoint}/`;
+            let method = 'POST';
+            if (currentEditId) {
+                url += `${currentEditId}`;
+                method = 'PUT';
+                if (currentTable === 'job_optins') url += `/status`;
+            } else {
+                if (currentTable === 'student_assessments') url += '/assign';
+                if (currentTable === 'job_optins') url += '/opt-in';
+            }
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { databaseModal.hide(); loadDatabase(currentTable); } else { const err = await res.json(); alert(err.detail || 'Error saving record'); }
+        }
+
+        async function deleteDatabaseItem(id) {
+            if (!confirm('Are you sure?')) return;
+            const schema = schemas[currentTable];
+            await fetch(`${API_BASE}/${schema.endpoint}/${id}`, { method: 'DELETE' });
+            loadDatabase(currentTable);
+        }
+    </script>
+</body>
+
+</html>
