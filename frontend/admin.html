@@ -847,6 +847,11 @@
 
         function openAddAdminModal() { document.getElementById('adminForm').reset(); adminModal.show(); }
 
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordForm').reset();
+            changePasswordModal.show();
+        }
+
         document.getElementById('adminForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const newPassword = document.getElementById('newPassword').value;
