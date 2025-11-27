@@ -579,18 +579,8 @@
             });
 
             // Initialize Tom Select
-            studentTomSelect = new TomSelect("#assignStudentSelect", {
-                create: false, sortField: {
-                    field: "text", direction:
-                        "asc"
-                }
-            });
-            assessmentTomSelect = new TomSelect("#assignAssessmentSelect", {
-                create: false, sortField: {
-                    field: "text",
-                    direction: "asc"
-                }
-            });
+            studentTomSelect = new TomSelect("#assignStudentSelect", { create: false, sortField: { field: "text", direction: "asc" } });
+            assessmentTomSelect = new TomSelect("#assignAssessmentSelect", { create: false, sortField: { field: "text", direction: "asc" } });
 
             loadDashboard();
         });
@@ -642,24 +632,8 @@
             const ctxPlace = document.getElementById('placementChart').getContext('2d');
             if (appChart) appChart.destroy();
             if (placeChart) placeChart.destroy();
-            appChart = new Chart(ctxApp, {
-                type: 'bar', data: {
-                    labels: Object.keys(data.application_status_breakdown),
-                    datasets: [{
-                        label: 'Applications', data: Object.values(data.application_status_breakdown), backgroundColor:
-                            '#4f46e5'
-                    }]
-                }, options: { responsive: true }
-            });
-            placeChart = new Chart(ctxPlace, {
-                type: 'doughnut', data: {
-                    labels: ['Placed', 'Looking'], datasets: [{
-                        data:
-                            [data.placed_students, data.total_students - data.placed_students], backgroundColor: ['#10b981', '#e5e7eb']
-                    }]
-                },
-                options: { responsive: true }
-            });
+            appChart = new Chart(ctxApp, { type: 'bar', data: { labels: Object.keys(data.application_status_breakdown), datasets: [{ label: 'Applications', data: Object.values(data.application_status_breakdown), backgroundColor: '#4f46e5' }] }, options: { responsive: true } });
+            placeChart = new Chart(ctxPlace, { type: 'doughnut', data: { labels: ['Placed', 'Looking'], datasets: [{ data: [data.placed_students, data.total_students - data.placed_students], backgroundColor: ['#10b981', '#e5e7eb'] }] }, options: { responsive: true } });
         }
 
         // --- Students ---
@@ -672,14 +646,14 @@
             tbody.innerHTML = '';
             students.forEach(s => {
                 tbody.innerHTML += `<tr>
-        <td>${s.id}</td>
-        <td>${s.name}</td>
-        <td>${s.email}</td>
-        <td><span class="badge bg-${s.status === 'Placed' ? 'success' : 'secondary'}">${s.status}</span>
-        </td>
-        <td><button class="btn btn-sm btn-outline-primary" onclick="editStudent(${s.id})">Edit</button>
-        </td>
-    </tr>`;
+                        <td>${s.id}</td>
+                        <td>${s.name}</td>
+                        <td>${s.email}</td>
+                        <td><span class="badge bg-${s.status === 'Placed' ? 'success' : 'secondary'}">${s.status}</span>
+                        </td>
+                        <td><button class="btn btn-sm btn-outline-primary" onclick="editStudent(${s.id})">Edit</button>
+                        </td>
+                    </tr>`;
             });
         }
 
@@ -705,17 +679,12 @@
         document.getElementById('studentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('studentId').value;
-            const data = {
-                name: document.getElementById('studentName').value, email:
-                    document.getElementById('studentEmail').value, status: document.getElementById('studentStatus').value
-            };
+            const data = { name: document.getElementById('studentName').value, email: document.getElementById('studentEmail').value, status: document.getElementById('studentStatus').value };
             const password = document.getElementById('studentPassword').value;
             if (password) data.password = password;
             const method = id ? 'PUT' : 'POST';
             const url = id ? `${API_BASE}/students/${id}` : `${API_BASE}/students/`;
-            const res = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-            });
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) { studentModal.hide(); loadStudents(); } else { alert('Error saving student'); }
         });
 
@@ -727,13 +696,14 @@
             tbody.innerHTML = '';
             jobs.forEach(j => {
                 tbody.innerHTML += `<tr>
-        <td>${j.id}</td>
-        <td>${j.title}</td>
-        <td>${j.company_name}</td>
-        <td>${j.location}</td>
-        <td><button class="btn btn-sm btn-outline-info" onclick="viewApplications(${j.id})">Apps</button> <button
-                class="btn btn-sm btn-outline-danger" onclick="deleteJob(${j.id})">Delete</button></td>
-    </tr>`;
+                        <td>${j.id}</td>
+                        <td>${j.title}</td>
+                        <td>${j.company_name}</td>
+                        <td>${j.location}</td>
+                        <td><button class="btn btn-sm btn-outline-info"
+                                onclick="viewApplications(${j.id})">Apps</button> <button
+                                class="btn btn-sm btn-outline-danger" onclick="deleteJob(${j.id})">Delete</button></td>
+                    </tr>`;
             });
         }
 
@@ -746,16 +716,8 @@
 
         document.getElementById('jobForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                title: document.getElementById('jobTitle').value, company_name:
-                    document.getElementById('jobCompany').value, location: document.getElementById('jobLocation').value, job_type:
-                    document.getElementById('jobType').value, description: document.getElementById('jobDescription').value
-            };
-            const res = await fetch(`${API_BASE}/job-openings/`, {
-                method: 'POST', headers: {
-                    'Content-Type': 'application/json'
-                }, body: JSON.stringify(data)
-            });
+            const data = { title: document.getElementById('jobTitle').value, company_name: document.getElementById('jobCompany').value, location: document.getElementById('jobLocation').value, job_type: document.getElementById('jobType').value, description: document.getElementById('jobDescription').value };
+            const res = await fetch(`${API_BASE}/job-openings/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) { jobModal.hide(); loadJobs(); } else { alert('Error saving job'); }
         });
 
@@ -774,35 +736,81 @@
                 const student = allStudents.find(s => s.id === app.student_id);
                 const studentName = student ? `${student.name} (ID: ${student.id})` : `ID: ${app.student_id}`;
                 tbody.innerHTML += `<tr>
-        <td>${studentName}</td>
-        <td><span class="badge bg-${app.status === 'WITHDRAWN' ? 'secondary' : 'info'}">${app.status}</span>
-        </td>
-        <td>${app.status === 'WITHDRAWN' ? '<span class="text-muted fst-italic">Withdrawn</span>' :
-                        `<select class="form-select form-select-sm" onchange="updateAppStatus(${app.id}, this.value)">
-                <option value="">Change Status...</option>
-                <option value="INTERVIEW_SCHEDULED">Interview</option>
-                <option value="OFFERED">Offered</option>
-                <option value="REJECTED">Rejected</option>
-                <option value="WITHDRAWN">Withdrawn</option>
-            </select>`}</td>
-    </tr>`;
+                        <td>${studentName}</td>
+                        <td><span
+                                class="badge bg-${app.status === 'WITHDRAWN' ? 'secondary' : 'info'}">${app.status}</span>
+                        </td>
+                        <td>${app.status === 'WITHDRAWN' ? '<span class="text-muted fst-italic">Withdrawn</span>' :
+                        `<select class="form-select form-select-sm"
+                                onchange="updateAppStatus(${app.id}, this.value)">
+                                <option value="">Change Status...</option>
+                                <option value="INTERVIEW_SCHEDULED">Interview</option>
+                                <option value="OFFERED">Offered</option>
+                                <option value="REJECTED">Rejected</option>
+                                <option value="WITHDRAWN">Withdrawn</option>
+                            </select>`}</td>
+                    </tr>`;
             });
+            applicationsModal.show();
+        }
+
+        async function updateAppStatus(optinId, status) {
+            if (!status) return;
+            await fetch(`${API_BASE}/job-optins/${optinId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
+            alert('Status updated');
+        }
+
+        // --- Assessments ---
+        async function loadAssessments() {
+            const res = await fetch(`${API_BASE}/assessments/`);
+            const assessments = await res.json();
+            allAssessments = assessments; // Update global list
+            updateAssessmentDatalist();
+            const tbody = document.querySelector('#assessmentsTable tbody');
+            tbody.innerHTML = '';
+            assessments.forEach(a => {
+                tbody.innerHTML += `<tr>
+                        <td>${a.id}</td>
+                        <td>${a.title}</td>
+                        <td>${a.max_score}</td>
+                        <td><button class="btn btn-sm btn-outline-danger"
+                                onclick="deleteAssessment(${a.id})">Delete</button></td>
+                    </tr>`;
+            });
+
+            const resAssign = await fetch(`${API_BASE}/student-assessments/`);
+            const assignments = await resAssign.json();
+            const tbodyAssign = document.querySelector('#studentAssessmentsTable tbody');
+            tbodyAssign.innerHTML = '';
+            assignments.forEach(a => {
+                const student = allStudents.find(s => s.id === a.student_id);
+                const assessment = allAssessments.find(as => as.id === a.assessment_id);
+                const studentName = student ? `${student.name} (ID: ${student.id})` : `ID: ${a.student_id}`;
+                const assessmentTitle = assessment ? `${assessment.title} (ID: ${assessment.id})` : `ID: ${a.assessment_id}`;
+                tbodyAssign.innerHTML += `<tr>
+                        <td>${a.id}</td>
+                        <td>${studentName}</td>
+                        <td>${assessmentTitle}</td>
+                        <td>${a.status}</td>
+                        <td>${a.score || '-'}</td>
+                        <td><button class="btn btn-sm btn-outline-danger"
+                                onclick="deleteAssignment(${a.id})">Delete</button></td>
+                    </tr>`;
+            });
+        }
+
+        function openAddAssessmentModal() { document.getElementById('assessmentForm').reset(); assessmentModal.show(); }
+
+        document.getElementById('assessmentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
-                title: document.getElementById('assessmentTitle').value, description:
-                    document.getElementById('assessmentDesc').value, max_score: document.getElementById('assessmentScore').value
-            };
-            const res = await fetch(`${API_BASE} / assessments / `, {
-                method: 'POST', headers: {
-                    'Content-Type': 'application/json'
-                }, body: JSON.stringify(data)
-            });
+            const data = { title: document.getElementById('assessmentTitle').value, description: document.getElementById('assessmentDesc').value, max_score: document.getElementById('assessmentScore').value };
+            const res = await fetch(`${API_BASE}/assessments/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             if (res.ok) { assessmentModal.hide(); loadAssessments(); } else { alert('Error saving assessment'); }
         });
 
         async function deleteAssessment(id) {
             if (!confirm('Are you sure?')) return;
-            await fetch(`${API_BASE} / assessments / ${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE}/assessments/${id}`, { method: 'DELETE' });
             loadAssessments();
         }
 
@@ -811,36 +819,28 @@
             const student_id = document.getElementById('assignStudentSelect').value;
             const assessment_id = document.getElementById('assignAssessmentSelect').value;
             if (!student_id || !assessment_id) { alert('Please select a valid student and assessment.'); return; }
-            const res = await fetch(`${API_BASE} / student - assessments / assign`, {
-                method: 'POST', headers: {
-                    'Content-Type':
-                        'application/json'
-                }, body: JSON.stringify({ student_id, assessment_id })
-            });
-            if (res.ok) { alert('Assessment assigned'); e.target.reset(); loadAssessments(); } else {
-                const data = await
-                    res.json(); alert(data.detail || 'Error assigning assessment');
-            }
+            const res = await fetch(`${API_BASE}/student-assessments/assign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ student_id, assessment_id }) });
+            if (res.ok) { alert('Assessment assigned'); e.target.reset(); loadAssessments(); } else { const data = await res.json(); alert(data.detail || 'Error assigning assessment'); }
         });
 
         async function deleteAssignment(id) {
             if (!confirm('Are you sure?')) return;
-            await fetch(`${API_BASE} / student - assessments / ${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE}/student-assessments/${id}`, { method: 'DELETE' });
             loadAssessments();
         }
 
         // --- Admins ---
         async function loadAdmins() {
-            const res = await fetch(`${API_BASE} / admins / `);
+            const res = await fetch(`${API_BASE}/admins/`);
             const admins = await res.json();
             const tbody = document.querySelector('#adminsTable tbody');
             tbody.innerHTML = '';
             admins.forEach(a => {
-                tbody.innerHTML += `< tr >
-        <td>${a.id}</td>
-        <td>${a.name}</td>
-        <td>${a.email}</td>
-    </tr > `;
+                tbody.innerHTML += `<tr>
+                        <td>${a.id}</td>
+                        <td>${a.name}</td>
+                        <td>${a.email}</td>
+                    </tr>`;
             });
         }
 
@@ -849,105 +849,34 @@
         document.getElementById('adminForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const newPassword = document.getElementById('newPassword').value;
-            const res = await fetch(`${API_BASE} / admins / ${currentUser.id} / password`, {
-                method: 'PUT', headers: {
-                    'Content-Type':
-                        'application/json'
-                }, body: JSON.stringify({ password: newPassword })
-            });
-            if (res.ok) { alert('Password updated successfully'); changePasswordModal.hide(); } else {
-                alert('Error updating password');
-            }
+            const res = await fetch(`${API_BASE}/admins/${currentUser.id}/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: newPassword }) });
+            if (res.ok) { alert('Password updated successfully'); changePasswordModal.hide(); } else { alert('Error updating password'); }
         });
 
         // --- Database Management ---
         const schemas = {
-            students: {
-                endpoint: 'students', columns: ['id', 'name', 'email', 'status'], fields: [{
-                    name: 'name', label:
-                        'Name', type: 'text', required: true
-                }, { name: 'email', label: 'Email', type: 'email', required: true }, {
-                    name:
-                        'password', label: 'Password', type: 'password', required: false
-                }, {
-                    name: 'status', label: 'Status', type:
-                        'select', options: ['Looking for job', 'Placed']
-                }]
-            },
-            job_openings: {
-                endpoint: 'job-openings', columns: ['id', 'title', 'company_name', 'location'], fields: [{
-                    name:
-                        'title', label: 'Title', type: 'text', required: true
-                }, {
-                    name: 'company_name', label: 'Company', type: 'text',
-                    required: true
-                }, { name: 'location', label: 'Location', type: 'text', required: true }, {
-                    name: 'job_type', label:
-                        'Type', type: 'select', options: ['Full-time', 'Internship']
-                }, {
-                    name: 'description', label: 'Description', type:
-                        'textarea', required: true
-                }]
-            },
-            assessments: {
-                endpoint: 'assessments', columns: ['id', 'title', 'max_score'], fields: [{
-                    name: 'title', label:
-                        'Title', type: 'text', required: true
-                }, {
-                    name: 'description', label: 'Description', type: 'textarea', required:
-                        true
-                }, { name: 'max_score', label: 'Max Score', type: 'number', required: true }]
-            },
-            admin_users: {
-                endpoint: 'admins', columns: ['id', 'name', 'email'], fields: [{
-                    name: 'name', label: 'Name', type:
-                        'text', required: true
-                }, { name: 'email', label: 'Email', type: 'email', required: true }, {
-                    name: 'password',
-                    label: 'Password', type: 'password', required: false
-                }]
-            },
-            student_assessments: {
-                endpoint: 'student-assessments', columns: ['id', 'student_id', 'assessment_id', 'status',
-                    'score'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, {
-                        name:
-                            'assessment_id', label: 'Assessment ID', type: 'number', required: true
-                    }, {
-                        name: 'status', label: 'Status', type:
-                            'select', options: ['ASSIGNED', 'COMPLETED']
-                    }, { name: 'score', label: 'Score', type: 'number' }]
-            },
-            job_optins: {
-                endpoint: 'job-optins', columns: ['id', 'student_id', 'job_opening_id', 'status'], fields: [{
-                    name:
-                        'student_id', label: 'Student ID', type: 'number', required: true
-                }, {
-                    name: 'job_opening_id', label: 'Job ID',
-                    type: 'number', required: true
-                }, {
-                    name: 'status', label: 'Status', type: 'select', options: ['OPTED_IN',
-                        'WITHDRAWN', 'INTERVIEW_SCHEDULED', 'OFFERED', 'REJECTED']
-                }]
-            }
+            students: { endpoint: 'students', columns: ['id', 'name', 'email', 'status'], fields: [{ name: 'name', label: 'Name', type: 'text', required: true }, { name: 'email', label: 'Email', type: 'email', required: true }, { name: 'password', label: 'Password', type: 'password', required: false }, { name: 'status', label: 'Status', type: 'select', options: ['Looking for job', 'Placed'] }] },
+            job_openings: { endpoint: 'job-openings', columns: ['id', 'title', 'company_name', 'location'], fields: [{ name: 'title', label: 'Title', type: 'text', required: true }, { name: 'company_name', label: 'Company', type: 'text', required: true }, { name: 'location', label: 'Location', type: 'text', required: true }, { name: 'job_type', label: 'Type', type: 'select', options: ['Full-time', 'Internship'] }, { name: 'description', label: 'Description', type: 'textarea', required: true }] },
+            assessments: { endpoint: 'assessments', columns: ['id', 'title', 'max_score'], fields: [{ name: 'title', label: 'Title', type: 'text', required: true }, { name: 'description', label: 'Description', type: 'textarea', required: true }, { name: 'max_score', label: 'Max Score', type: 'number', required: true }] },
+            admin_users: { endpoint: 'admins', columns: ['id', 'name', 'email'], fields: [{ name: 'name', label: 'Name', type: 'text', required: true }, { name: 'email', label: 'Email', type: 'email', required: true }, { name: 'password', label: 'Password', type: 'password', required: false }] },
+            student_assessments: { endpoint: 'student-assessments', columns: ['id', 'student_id', 'assessment_id', 'status', 'score'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, { name: 'assessment_id', label: 'Assessment ID', type: 'number', required: true }, { name: 'status', label: 'Status', type: 'select', options: ['ASSIGNED', 'COMPLETED'] }, { name: 'score', label: 'Score', type: 'number' }] },
+            job_optins: { endpoint: 'job-optins', columns: ['id', 'student_id', 'job_opening_id', 'status'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, { name: 'job_opening_id', label: 'Job ID', type: 'number', required: true }, { name: 'status', label: 'Status', type: 'select', options: ['OPTED_IN', 'WITHDRAWN', 'INTERVIEW_SCHEDULED', 'OFFERED', 'REJECTED'] }] }
         };
 
         async function loadDatabase(tableName) {
             currentTable = tableName;
             const schema = schemas[tableName];
-            const res = await fetch(`${API_BASE} / ${schema.endpoint} / `);
+            const res = await fetch(`${API_BASE}/${schema.endpoint}/`);
             const data = await res.json();
             const thead = document.querySelector('#databaseTable thead');
             const tbody = document.querySelector('#databaseTable tbody');
-            thead.innerHTML = `< tr > ${schema.columns.map(c => `<th>${c}</th>`).join('')} < th > Actions</th >
-    </tr > `;
+            thead.innerHTML = `<tr>${schema.columns.map(c => `<th>${c}</th>`).join('')}<th>Actions</th></tr>`;
             tbody.innerHTML = '';
             data.forEach(item => {
-                tbody.innerHTML += `< tr >
-                ${schema.columns.map(c => `<td>${item[c]}</td>`).join('')}
-                < td ><button class="btn btn-sm btn-outline-primary"
-                onclick='openDatabaseModal("edit", ${JSON.stringify(item)})'>Edit</button> <button
-                class="btn btn-sm btn-outline-danger" onclick="deleteDatabaseItem(${item.id})">Delete</button></td >
-    </tr > `;
+                tbody.innerHTML += `<tr>
+                        ${schema.columns.map(c => `<td>${item[c]}</td>`).join('')}
+                        <td><button class="btn btn-sm btn-outline-primary" onclick='openDatabaseModal("edit", ${JSON.stringify(item)})'>Edit</button> <button class="btn btn-sm btn-outline-danger" onclick="deleteDatabaseItem(${item.id})">Delete</button></td>
+                    </tr>`;
             });
         }
 
@@ -959,13 +888,11 @@
             form.innerHTML = schema.fields.map(f => {
                 const value = item ? item[f.name] || '' : '';
                 if (f.type === 'select') {
-                    return `< div class= "mb-3" ><label>${f.label}</label><select class="form-select" id="db_${f.name}">${f.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div > `;
+                    return `<div class="mb-3"><label>${f.label}</label><select class="form-select" id="db_${f.name}">${f.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`;
                 } else if (f.type === 'textarea') {
-                    return `< div class= "mb-3" ><label>${f.label}</label><textarea class="form-control" id="db_${f.name}" ${f.required
-                        ? 'required' : ''}>${value}</textarea></div > `;
+                    return `<div class="mb-3"><label>${f.label}</label><textarea class="form-control" id="db_${f.name}" ${f.required ? 'required' : ''}>${value}</textarea></div>`;
                 } else {
-                    return `< div class= "mb-3" ><label>${f.label}</label><input type="${f.type}" class="form-control" id="db_${f.name}"
-            value="${value}" ${f.required ? 'required' : ''}></div>`;
+                    return `<div class="mb-3"><label>${f.label}</label><input type="${f.type}" class="form-control" id="db_${f.name}" value="${value}" ${f.required ? 'required' : ''}></div>`;
                 }
             }).join('');
             databaseModal.show();
@@ -974,231 +901,28 @@
         async function saveDatabaseItem() {
             const schema = schemas[currentTable];
             const data = {};
-            schema.fields.forEach(f => {
-                const el = document.getElementById(`db_${f.name}`); if (el) data[f.name] = el.value;
-            });
-            let url = `${API_BASE} / ${schema.endpoint} / `;
+            schema.fields.forEach(f => { const el = document.getElementById(`db_${f.name}`); if (el) data[f.name] = el.value; });
+            let url = `${API_BASE}/${schema.endpoint}/`;
             let method = 'POST';
             if (currentEditId) {
                 url += `${currentEditId}`;
                 method = 'PUT';
-                if (currentTable === 'job_optins') url += `/ status`;
+                if (currentTable === 'job_optins') url += `/status`;
             } else {
                 if (currentTable === 'student_assessments') url += '/assign';
                 if (currentTable === 'job_optins') url += '/opt-in';
             }
-            const res = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-            });
-            if (res.ok) { databaseModal.hide(); loadDatabase(currentTable); } else {
-                const err = await res.json();
-                alert(err.detail || 'Error saving record');
-            }
-        }
-
-        async function deleteDatabaseItem(id) {
-            await fetch(`${API_BASE} / assessments / ${id}`, { method: 'DELETE' });
-            loadAssessments();
-        }
-
-        document.getElementById('assignAssessmentForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const student_id = document.getElementById('assignStudentSelect').value;
-            const assessment_id = document.getElementById('assignAssessmentSelect').value;
-            if (!student_id || !assessment_id) { alert('Please select a valid student and assessment.'); return; }
-            const res = await fetch(`${API_BASE} / student - assessments / assign`, {
-                method: 'POST', headers: {
-                    'Content-Type':
-                        'application/json'
-                }, body: JSON.stringify({ student_id, assessment_id })
-            });
-            if (res.ok) { alert('Assessment assigned'); e.target.reset(); loadAssessments(); } else {
-                const data = await
-                    res.json(); alert(data.detail || 'Error assigning assessment');
-            }
-        });
-
-        async function deleteAssignment(id) {
-            if (!confirm('Are you sure?')) return;
-            await fetch(`${API_BASE} / student - assessments / ${id}`, { method: 'DELETE' });
-            loadAssessments();
-        }
-
-        // --- Admins ---
-        async function loadAdmins() {
-            const res = await fetch(`${API_BASE} / admins / `);
-            const admins = await res.json();
-            const tbody = document.querySelector('#adminsTable tbody');
-            tbody.innerHTML = '';
-            admins.forEach(a => {
-                tbody.innerHTML += `< tr >
-        <td>${a.id}</td>
-        <td>${a.name}</td>
-        <td>${a.email}</td>
-    </tr > `;
-            });
-        }
-
-        function openAddAdminModal() { document.getElementById('adminForm').reset(); adminModal.show(); }
-
-        document.getElementById('adminForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newPassword = document.getElementById('newPassword').value;
-            const res = await fetch(`${API_BASE} / admins / ${currentUser.id} / password`, {
-                method: 'PUT', headers: {
-                    'Content-Type':
-                        'application/json'
-                }, body: JSON.stringify({ password: newPassword })
-            });
-            if (res.ok) { alert('Password updated successfully'); changePasswordModal.hide(); } else {
-                alert('Error updating password');
-            }
-        });
-
-        // --- Database Management ---
-        const schemas = {
-            students: {
-                endpoint: 'students', columns: ['id', 'name', 'email', 'status'], fields: [{
-                    name: 'name', label:
-                        'Name', type: 'text', required: true
-                }, { name: 'email', label: 'Email', type: 'email', required: true }, {
-                    name:
-                        'password', label: 'Password', type: 'password', required: false
-                }, {
-                    name: 'status', label: 'Status', type:
-                        'select', options: ['Looking for job', 'Placed']
-                }]
-            },
-            job_openings: {
-                endpoint: 'job-openings', columns: ['id', 'title', 'company_name', 'location'], fields: [{
-                    name:
-                        'title', label: 'Title', type: 'text', required: true
-                }, {
-                    name: 'company_name', label: 'Company', type: 'text',
-                    required: true
-                }, { name: 'location', label: 'Location', type: 'text', required: true }, {
-                    name: 'job_type', label:
-                        'Type', type: 'select', options: ['Full-time', 'Internship']
-                }, {
-                    name: 'description', label: 'Description', type:
-                        'textarea', required: true
-                }]
-            },
-            assessments: {
-                endpoint: 'assessments', columns: ['id', 'title', 'max_score'], fields: [{
-                    name: 'title', label:
-                        'Title', type: 'text', required: true
-                }, {
-                    name: 'description', label: 'Description', type: 'textarea', required:
-                        true
-                }, { name: 'max_score', label: 'Max Score', type: 'number', required: true }]
-            },
-            admin_users: {
-                endpoint: 'admins', columns: ['id', 'name', 'email'], fields: [{
-                    name: 'name', label: 'Name', type:
-                        'text', required: true
-                }, { name: 'email', label: 'Email', type: 'email', required: true }, {
-                    name: 'password',
-                    label: 'Password', type: 'password', required: false
-                }]
-            },
-            student_assessments: {
-                endpoint: 'student-assessments', columns: ['id', 'student_id', 'assessment_id', 'status',
-                    'score'], fields: [{ name: 'student_id', label: 'Student ID', type: 'number', required: true }, {
-                        name:
-                            'assessment_id', label: 'Assessment ID', type: 'number', required: true
-                    }, {
-                        name: 'status', label: 'Status', type:
-                            'select', options: ['ASSIGNED', 'COMPLETED']
-                    }, { name: 'score', label: 'Score', type: 'number' }]
-            },
-            job_optins: {
-                endpoint: 'job-optins', columns: ['id', 'student_id', 'job_opening_id', 'status'], fields: [{
-                    name:
-                        'student_id', label: 'Student ID', type: 'number', required: true
-                }, {
-                    name: 'job_opening_id', label: 'Job ID',
-                    type: 'number', required: true
-                }, {
-                    name: 'status', label: 'Status', type: 'select', options: ['OPTED_IN',
-                        'WITHDRAWN', 'INTERVIEW_SCHEDULED', 'OFFERED', 'REJECTED']
-                }]
-            }
-        };
-
-        async function loadDatabase(tableName) {
-            currentTable = tableName;
-            const schema = schemas[tableName];
-            const res = await fetch(`${API_BASE} / ${schema.endpoint} / `);
-            const data = await res.json();
-            const thead = document.querySelector('#databaseTable thead');
-            const tbody = document.querySelector('#databaseTable tbody');
-            thead.innerHTML = `< tr > ${schema.columns.map(c => `<th>${c}</th>`).join('')} < th > Actions</th >
-    </tr > `;
-            tbody.innerHTML = '';
-            data.forEach(item => {
-                tbody.innerHTML += `< tr >
-                ${schema.columns.map(c => `<td>${item[c]}</td>`).join('')}
-                < td ><button class="btn btn-sm btn-outline-primary"
-                onclick='openDatabaseModal("edit", ${JSON.stringify(item)})'>Edit</button> <button
-                class="btn btn-sm btn-outline-danger" onclick="deleteDatabaseItem(${item.id})">Delete</button></td >
-    </tr > `;
-            });
-        }
-
-        function openDatabaseModal(mode, item = null) {
-            const schema = schemas[currentTable];
-            document.getElementById('databaseModalTitle').innerText = mode === 'add' ? 'Add Record' : 'Edit Record';
-            currentEditId = item ? item.id : null;
-            const form = document.getElementById('databaseForm');
-            form.innerHTML = schema.fields.map(f => {
-                const value = item ? item[f.name] || '' : '';
-                if (f.type === 'select') {
-                    return `< div class= "mb-3" ><label>${f.label}</label><select class="form-select" id="db_${f.name}">${f.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}</select></div > `;
-                } else if (f.type === 'textarea') {
-                    return `< div class= "mb-3" ><label>${f.label}</label><textarea class="form-control" id="db_${f.name}" ${f.required
-                        ? 'required' : ''}>${value}</textarea></div > `;
-                } else {
-                    return `< div class= "mb-3" ><label>${f.label}</label><input type="${f.type}" class="form-control" id="db_${f.name}"
-            value="${value}" ${f.required ? 'required' : ''}></div>`;
-                }
-            }).join('');
-            databaseModal.show();
-        }
-
-        async function saveDatabaseItem() {
-            const schema = schemas[currentTable];
-            const data = {};
-            schema.fields.forEach(f => {
-                const el = document.getElementById(`db_${f.name}`); if (el) data[f.name] = el.value;
-            });
-            let url = `${API_BASE} / ${schema.endpoint} / `;
-            let method = 'POST';
-            if (currentEditId) {
-                url += `${currentEditId}`;
-                method = 'PUT';
-                if (currentTable === 'job_optins') url += `/ status`;
-            } else {
-                if (currentTable === 'student_assessments') url += '/assign';
-                if (currentTable === 'job_optins') url += '/opt-in';
-            }
-            const res = await fetch(url, {
-                method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-            });
-            if (res.ok) { databaseModal.hide(); loadDatabase(currentTable); } else {
-                const err = await res.json();
-                alert(err.detail || 'Error saving record');
-            }
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { databaseModal.hide(); loadDatabase(currentTable); } else { const err = await res.json(); alert(err.detail || 'Error saving record'); }
         }
 
         async function deleteDatabaseItem(id) {
             if (!confirm('Are you sure?')) return;
             const schema = schemas[currentTable];
-            await fetch(`${API_BASE} / ${schema.endpoint} / ${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE}/${schema.endpoint}/${id}`, { method: 'DELETE' });
             loadDatabase(currentTable);
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
