@@ -26,12 +26,12 @@ A simple full-stack application for managing student job readiness, including jo
    ```bash
    uvicorn main:app --reload
    ```
-   The API will be available at `http://localhost:8000`.
+   The API will be available at `http://localhost:5000`.
 
 ### Frontend
 1. Open `frontend/index.html` in your web browser.
 2. Use the tabs to switch between Student and Admin login.
-3. **Important:** For local testing, ensure the `API_BASE` variable in the script section of HTML files is set to `http://localhost:8000`.
+3. **Important:** For local testing, ensure the `API_BASE` variable in the script section of HTML files is set to `http://localhost:5000`.
 
 ## Deployment (Single Repository)
 
@@ -42,7 +42,7 @@ You can push both `backend` and `frontend` folders to **one GitHub repository**.
 2. Connect your GitHub repository.
 3. **Important:** In the settings, find **Root Directory** and set it to `backend`.
 4. Set the **Build Command** to: `pip install -r requirements.txt`
-5. Set the **Start Command** to: `uvicorn main:app --host 0.0.0.0 --port 8000`
+5. Set the **Start Command** to: `uvicorn main:app --host 0.0.0.0 --port 5000`
 6. Copy the deployed URL (e.g., `https://your-app.onrender.com`).
 
 ### Frontend (Netlify)
