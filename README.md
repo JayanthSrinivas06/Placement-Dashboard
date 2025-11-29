@@ -11,7 +11,7 @@ A comprehensive full-stack web application for managing student placement activi
 
 ### Admin Account
 - **Email:** `admin@example.com`
-- **Password:** `admin123`
+- **Password:** `admin`
 
 ### Student Accounts
 | Name | Email | Password |
